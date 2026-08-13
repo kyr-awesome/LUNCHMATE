@@ -1,0 +1,315 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>오늘 점심 누구랑</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink:#0F262B;
+    --ink-deep:#0A1A1E;
+    --steel-hi:#F2F5F6;
+    --steel:#CBD3D7;
+    --steel-mid:#A9B4B9;
+    --steel-dark:#7C888E;
+    --gochu:#E1442B;
+    --danmuji:#F3C043;
+    --line:rgba(255,255,255,.14);
+    --display:"Black Han Sans","Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
+    --body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    min-height:100vh;
+    background:
+      radial-gradient(120% 90% at 50% -10%, #1B4048 0%, var(--ink) 45%, var(--ink-deep) 100%);
+    color:var(--steel-hi);
+    font-family:var(--body);
+    -webkit-font-smoothing:antialiased;
+    display:flex;justify-content:center;
+    padding:clamp(20px,5vw,56px) 16px 64px;
+  }
+  .wrap{width:100%;max-width:920px}
+
+  /* ── header ── */
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:10px;
+    font-size:12px;letter-spacing:.22em;font-weight:700;
+    color:var(--danmuji);text-transform:uppercase;
+    margin:0 0 14px;
+  }
+  .eyebrow::before{content:"";width:26px;height:2px;background:var(--gochu)}
+  h1{
+    font-family:var(--display);
+    font-size:clamp(38px,8.5vw,76px);
+    line-height:.98;letter-spacing:-.01em;
+    margin:0 0 12px;
+  }
+  h1 em{font-style:normal;color:var(--gochu)}
+  .sub{margin:0;color:var(--steel-mid);font-size:15px;line-height:1.6}
+
+  /* ── controls ── */
+  .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:28px 0 30px}
+  button{font-family:inherit;cursor:pointer;border:0}
+  .draw{
+    background:var(--gochu);color:#fff;
+    font-family:var(--display);font-size:19px;letter-spacing:.02em;
+    padding:15px 30px 13px;border-radius:999px;
+    box-shadow:0 10px 0 -4px rgba(225,68,43,.35), 0 14px 30px rgba(0,0,0,.35);
+    transition:transform .12s ease, box-shadow .12s ease;
+  }
+  .draw:hover{transform:translateY(-2px)}
+  .draw:active{transform:translateY(2px);box-shadow:0 6px 0 -4px rgba(225,68,43,.35)}
+  .draw[disabled]{opacity:.5;cursor:progress;transform:none}
+  .ghost{
+    background:transparent;color:var(--steel-mid);
+    border:1px solid var(--line);border-radius:999px;
+    padding:13px 20px;font-size:14px;font-weight:600;
+    transition:color .15s, border-color .15s;
+  }
+  .ghost:hover{color:var(--steel-hi);border-color:rgba(255,255,255,.4)}
+  .count{margin-left:auto;font-size:13px;color:var(--steel-dark);font-variant-numeric:tabular-nums}
+  :focus-visible{outline:3px solid var(--danmuji);outline-offset:3px}
+
+  /* ── trays ── */
+  .trays{display:grid;grid-template-columns:1fr 1fr;gap:22px}
+  .tray{
+    background:linear-gradient(160deg,#F4F7F8 0%,var(--steel) 46%,#B7C0C5 100%);
+    border-radius:20px;
+    padding:16px 16px 18px;
+    box-shadow:
+      inset 0 2px 0 rgba(255,255,255,.9),
+      inset 0 -3px 8px rgba(0,0,0,.18),
+      0 22px 40px rgba(0,0,0,.4);
+    position:relative;
+  }
+  .tray::after{ /* rivets */
+    content:"";position:absolute;inset:8px;border-radius:14px;
+    border:1px solid rgba(255,255,255,.5);pointer-events:none;
+  }
+  .tag{
+    display:flex;align-items:baseline;gap:8px;
+    margin:2px 4px 14px;position:relative;z-index:1;
+  }
+  .tag b{font-family:var(--display);font-size:20px;color:var(--ink);letter-spacing:.02em}
+  .tag span{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--steel-dark)}
+  .slots{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative;z-index:1}
+  .slot{
+    aspect-ratio:1/.82;
+    border-radius:12px;
+    background:linear-gradient(180deg,#AFB9BE,#D6DCDF 60%,#C4CCD0);
+    box-shadow:inset 0 3px 7px rgba(0,0,0,.28), inset 0 -2px 0 rgba(255,255,255,.6);
+    display:flex;align-items:center;justify-content:center;
+    padding:6px;
+    overflow:hidden;
+  }
+  .name{
+    font-family:var(--display);
+    font-size:clamp(19px,4.6vw,29px);
+    color:var(--ink);
+    letter-spacing:.01em;
+    text-shadow:0 1px 0 rgba(255,255,255,.6);
+    text-align:center;line-height:1.1;
+  }
+  .slot.empty .name{color:var(--steel-dark);opacity:.5;font-size:26px}
+  .slot.rolling .name{opacity:.55;filter:blur(.4px)}
+  .slot.land{animation:land .42s cubic-bezier(.2,1.5,.4,1)}
+  @keyframes land{
+    0%{transform:scale(.7) translateY(-16px);opacity:0}
+    60%{transform:scale(1.06) translateY(0);opacity:1}
+    100%{transform:scale(1)}
+  }
+  .tray.hit{animation:shake .3s ease}
+  @keyframes shake{25%{transform:translateY(-3px)}75%{transform:translateY(2px)}}
+
+  /* ── editor ── */
+  details{margin-top:30px;border-top:1px solid var(--line);padding-top:16px}
+  summary{
+    cursor:pointer;font-size:13px;font-weight:700;color:var(--steel-dark);
+    letter-spacing:.06em;list-style:none;
+  }
+  summary::-webkit-details-marker{display:none}
+  summary::before{content:"＋ ";color:var(--gochu)}
+  details[open] summary::before{content:"− "}
+  .fields{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+  .fields input{
+    width:100%;padding:11px 12px;border-radius:9px;
+    background:rgba(255,255,255,.06);border:1px solid var(--line);
+    color:var(--steel-hi);font-family:inherit;font-size:15px;
+  }
+  .fields input:focus{background:rgba(255,255,255,.1)}
+  .hint{margin:12px 0 0;font-size:12px;color:var(--steel-dark)}
+
+  footer{margin-top:34px;font-size:12px;color:var(--steel-dark);letter-spacing:.04em}
+
+  @media (max-width:620px){
+    .trays{grid-template-columns:1fr}
+    .fields{grid-template-columns:repeat(2,1fr)}
+    .count{margin-left:0;width:100%}
+  }
+  @media (prefers-reduced-motion:reduce){
+    *{animation:none!important;transition:none!important}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <p class="eyebrow">8명 · 2테이블 · 완전 랜덤</p>
+  <h1>오늘 점심<br><em>누구랑</em> 먹지</h1>
+  <p class="sub">버튼을 누르면 여덟 명이 네 명씩 두 테이블로 갈라집니다. 마음에 안 들면 다시 뽑아도 돼요.</p>
+
+  <div class="bar">
+    <button class="draw" id="draw">점심 짝 뽑기</button>
+    <button class="ghost" id="swap" hidden>한 명씩 자리 바꾸기</button>
+    <span class="count" id="count">아직 뽑기 전</span>
+  </div>
+
+  <div class="trays">
+    <div class="tray" id="tray1">
+      <div class="tag"><b>1번 테이블</b><span>TABLE 01</span></div>
+      <div class="slots" id="slots1"></div>
+    </div>
+    <div class="tray" id="tray2">
+      <div class="tag"><b>2번 테이블</b><span>TABLE 02</span></div>
+      <div class="slots" id="slots2"></div>
+    </div>
+  </div>
+
+  <details>
+    <summary>명단 고치기</summary>
+    <div class="fields" id="fields"></div>
+    <p class="hint">이름을 비우면 그 사람은 빠집니다. 인원이 홀수면 1번 테이블이 한 명 더 많아요.</p>
+  </details>
+
+  <footer>같은 조합이 연달아 나오면 알아서 한 번 더 섞습니다.</footer>
+</div>
+
+<script>
+const DEFAULT = ["강한범","최진영","최여진","김새롬","김예리","김송정","곽현규","오현진"];
+let people = [...DEFAULT];
+let lastKey = null;
+let busy = false;
+
+const fields = document.getElementById("fields");
+const slots1 = document.getElementById("slots1");
+const slots2 = document.getElementById("slots2");
+const drawBtn = document.getElementById("draw");
+const swapBtn = document.getElementById("swap");
+const countEl = document.getElementById("count");
+
+/* 명단 입력칸 */
+DEFAULT.forEach((n,i)=>{
+  const input = document.createElement("input");
+  input.value = n;
+  input.setAttribute("aria-label", (i+1)+"번 이름");
+  input.addEventListener("input", readNames);
+  fields.appendChild(input);
+});
+function readNames(){
+  people = [...fields.querySelectorAll("input")].map(i=>i.value.trim()).filter(Boolean);
+  countEl.textContent = people.length + "명 대기 중";
+  buildSlots();
+}
+
+/* 빈 식판 그리기 */
+function buildSlots(){
+  const half = Math.ceil(people.length/2);
+  render(slots1, half, true);
+  render(slots2, people.length-half, true);
+}
+function render(box, n, empty){
+  box.innerHTML = "";
+  for(let i=0;i<n;i++){
+    const s = document.createElement("div");
+    s.className = "slot" + (empty?" empty":"");
+    s.innerHTML = '<span class="name">?</span>';
+    box.appendChild(s);
+  }
+}
+buildSlots();
+
+function shuffle(arr){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function keyOf(a,b){
+  return [a.slice().sort().join("·"), b.slice().sort().join("·")].sort().join("//");
+}
+
+const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+async function draw(){
+  if(busy) return;
+  if(people.length < 2){ countEl.textContent = "이름을 두 명 이상 적어주세요"; return; }
+  busy = true; drawBtn.disabled = true; swapBtn.hidden = true;
+  countEl.textContent = "섞는 중…";
+
+  let t1, t2, key, tries = 0;
+  do{
+    const mixed = shuffle(people);
+    const half = Math.ceil(mixed.length/2);
+    t1 = mixed.slice(0,half); t2 = mixed.slice(half);
+    key = keyOf(t1,t2); tries++;
+  } while(key === lastKey && tries < 12);
+  lastKey = key;
+
+  render(slots1, t1.length, false);
+  render(slots2, t2.length, false);
+  const cells = [...slots1.children, ...slots2.children];
+  const all = [...t1,...t2];
+
+  if(reduce){
+    cells.forEach((c,i)=> c.querySelector(".name").textContent = all[i]);
+  } else {
+    const timers = cells.map(c=>{
+      c.classList.add("rolling");
+      return setInterval(()=>{
+        c.querySelector(".name").textContent = people[Math.floor(Math.random()*people.length)];
+      }, 55);
+    });
+    for(let i=0;i<cells.length;i++){
+      await wait(i===0 ? 620 : 260);
+      clearInterval(timers[i]);
+      cells[i].classList.remove("rolling");
+      cells[i].querySelector(".name").textContent = all[i];
+      cells[i].classList.add("land");
+      const tray = i < t1.length ? tray1 : tray2;
+      tray.classList.add("hit");
+      setTimeout(()=>tray.classList.remove("hit"), 300);
+    }
+  }
+
+  countEl.textContent = t1.length + "명 · " + t2.length + "명으로 나눴어요";
+  drawBtn.textContent = "다시 뽑기";
+  drawBtn.disabled = false;
+  swapBtn.hidden = false;
+  busy = false;
+}
+function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+/* 한 명씩만 맞바꾸기 */
+swapBtn.addEventListener("click", ()=>{
+  if(busy) return;
+  const a = [...slots1.children], b = [...slots2.children];
+  if(!a.length || !b.length) return;
+  const i = Math.floor(Math.random()*a.length);
+  const j = Math.floor(Math.random()*b.length);
+  const na = a[i].querySelector(".name"), nb = b[j].querySelector(".name");
+  const tmp = na.textContent; na.textContent = nb.textContent; nb.textContent = tmp;
+  [a[i],b[j]].forEach(c=>{ c.classList.remove("land"); void c.offsetWidth; c.classList.add("land"); });
+  countEl.textContent = tmp + " ↔ " + na.textContent + " 자리를 바꿨어요";
+  lastKey = null;
+});
+
+drawBtn.addEventListener("click", draw);
+</script>
+</body>
+</html>

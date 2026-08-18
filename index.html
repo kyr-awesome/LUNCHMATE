@@ -2,535 +2,532 @@
 <html lang="ko">
 <head>
 <meta charset="utf-8">
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="theme-color" content="#0F262B">
 <title>오늘 점심 누구랑</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Black+Han+Sans&display=swap" rel="stylesheet">
 <style>
   :root{
-    --ink:#0F262B;
-    --ink-deep:#0A1A1E;
-    --steel-hi:#F2F5F6;
-    --steel:#CBD3D7;
-    --steel-mid:#A9B4B9;
-    --steel-dark:#7C888E;
-    --gochu:#E1442B;
-    --danmuji:#F3C043;
+    --ink:#0F262B; --ink-deep:#0A1A1E;
+    --steel-hi:#F2F5F6; --steel:#CBD3D7; --steel-mid:#A9B4B9; --steel-dark:#7C888E;
+    --gochu:#E1442B; --danmuji:#F3C043;
+    --paper:#F7F2E6; --paper-line:#E0D8C4;
     --line:rgba(255,255,255,.14);
     --display:"Black Han Sans","Pretendard",-apple-system,"Apple SD Gothic Neo","Malgun Gothic",sans-serif;
     --body:"Pretendard",-apple-system,BlinkMacSystemFont,"Apple SD Gothic Neo","Malgun Gothic","Noto Sans KR",sans-serif;
   }
-  *{box-sizing:border-box}
+  *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
   html,body{margin:0;padding:0}
   body{
     min-height:100vh;
-    background:
-      radial-gradient(120% 90% at 50% -10%, #1B4048 0%, var(--ink) 45%, var(--ink-deep) 100%);
-    color:var(--steel-hi);
-    font-family:var(--body);
-    -webkit-font-smoothing:antialiased;
-    display:flex;justify-content:center;
-    padding:clamp(20px,5vw,56px) 16px 64px;
+    background:radial-gradient(120% 90% at 50% -10%, #1B4048 0%, var(--ink) 45%, var(--ink-deep) 100%);
+    background-attachment:fixed;
+    color:var(--steel-hi); font-family:var(--body); -webkit-font-smoothing:antialiased;
+    display:flex; justify-content:center;
+    padding:clamp(18px,5vw,56px) clamp(14px,4vw,20px) calc(64px + env(safe-area-inset-bottom));
   }
-  .wrap{width:100%;max-width:920px}
+  .wrap{width:100%;max-width:1040px}
+  button,input,select{font-family:inherit;font-size:16px} /* 16px: iOS 확대 방지 */
+  :focus-visible{outline:3px solid var(--danmuji);outline-offset:3px}
 
-  /* ── header ── */
-  .eyebrow{
-    display:inline-flex;align-items:center;gap:10px;
-    font-size:12px;letter-spacing:.22em;font-weight:700;
-    color:var(--danmuji);text-transform:uppercase;
-    margin:0 0 14px;
-  }
+  .eyebrow{display:inline-flex;align-items:center;gap:10px;font-size:12px;letter-spacing:.22em;font-weight:700;color:var(--danmuji);margin:0 0 14px}
   .eyebrow::before{content:"";width:26px;height:2px;background:var(--gochu)}
-  h1{
-    font-family:var(--display);
-    font-size:clamp(38px,8.5vw,76px);
-    line-height:.98;letter-spacing:-.01em;
-    margin:0 0 12px;
-  }
+  h1{font-family:var(--display);font-size:clamp(36px,9vw,76px);line-height:.98;margin:0 0 12px}
   h1 em{font-style:normal;color:var(--gochu)}
   .sub{margin:0;color:var(--steel-mid);font-size:15px;line-height:1.6}
 
-  /* ── controls ── */
-  .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:28px 0 30px}
-  button{font-family:inherit;cursor:pointer;border:0}
-  .draw{
-    background:var(--gochu);color:#fff;
-    font-family:var(--display);font-size:19px;letter-spacing:.02em;
-    padding:15px 30px 13px;border-radius:999px;
-    box-shadow:0 10px 0 -4px rgba(225,68,43,.35), 0 14px 30px rgba(0,0,0,.35);
-    transition:transform .12s ease, box-shadow .12s ease;
-  }
-  .draw:hover{transform:translateY(-2px)}
-  .draw:active{transform:translateY(2px);box-shadow:0 6px 0 -4px rgba(225,68,43,.35)}
-  .draw[disabled]{opacity:.5;cursor:progress;transform:none}
-  .ghost{
-    background:transparent;color:var(--steel-mid);
-    border:1px solid var(--line);border-radius:999px;
-    padding:13px 20px;font-size:14px;font-weight:600;
-    transition:color .15s, border-color .15s;
-  }
-  .ghost:hover{color:var(--steel-hi);border-color:rgba(255,255,255,.4)}
-  .team-count{
-    display:flex;align-items:center;gap:8px;
-    font-size:13px;font-weight:600;color:var(--steel-mid);
-  }
-  .team-count input{
-    width:56px;padding:9px 8px;border-radius:8px;text-align:center;
-    background:rgba(255,255,255,.06);border:1px solid var(--line);
-    color:var(--steel-hi);font-family:inherit;font-size:14px;
-  }
-  .count{margin-left:auto;font-size:13px;color:var(--steel-dark);font-variant-numeric:tabular-nums}
-  :focus-visible{outline:3px solid var(--danmuji);outline-offset:3px}
+  .block{margin-top:clamp(24px,5vw,32px)}
+  .label{font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--steel-dark);margin:0 0 12px}
 
-  /* ── trays ── */
-  .trays{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:22px}
-  .tray{
-    background:linear-gradient(160deg,#F4F7F8 0%,var(--steel) 46%,#B7C0C5 100%);
-    border-radius:20px;
-    padding:16px 16px 18px;
-    box-shadow:
-      inset 0 2px 0 rgba(255,255,255,.9),
-      inset 0 -3px 8px rgba(0,0,0,.18),
-      0 22px 40px rgba(0,0,0,.4);
-    position:relative;
-  }
-  .tray::after{ /* rivets */
-    content:"";position:absolute;inset:8px;border-radius:14px;
-    border:1px solid rgba(255,255,255,.5);pointer-events:none;
-  }
-  .tag{
-    display:flex;align-items:center;flex-wrap:wrap;gap:8px;row-gap:6px;
-    margin:2px 4px 14px;position:relative;z-index:1;
-  }
-  .tag b{font-family:var(--display);font-size:20px;color:var(--ink);letter-spacing:.02em}
-  .tag span{font-size:11px;font-weight:700;letter-spacing:.16em;color:var(--steel-dark)}
-  .menu-pill{
-    margin-left:auto;font-size:11px;font-weight:700;letter-spacing:0;
-    color:var(--ink);background:var(--danmuji);border-radius:999px;padding:4px 10px;
-  }
-  .remenu{
-    flex:none;width:24px;height:24px;border-radius:999px;
-    background:transparent;border:1px solid rgba(15,38,43,.25);color:var(--ink);
-    font-size:13px;line-height:1;
-  }
-  .remenu:hover{background:rgba(15,38,43,.08)}
+  .roster{display:flex;flex-wrap:wrap;gap:9px}
+  .chip{display:inline-flex;align-items:center;gap:8px;padding:11px 16px 11px 14px;border-radius:999px;
+    background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--steel-hi);
+    font-size:15px;font-weight:600;cursor:pointer;transition:background .15s,color .15s}
+  .chip::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--danmuji);flex:none}
+  .chip[aria-pressed="false"]{background:transparent;color:var(--steel-dark);text-decoration:line-through;border-style:dashed}
+  .chip[aria-pressed="false"]::before{background:var(--steel-dark);opacity:.5}
+  .chip .off{display:none;font-size:11px;font-weight:800;letter-spacing:.1em;text-decoration:none}
+  .chip[aria-pressed="false"] .off{display:inline}
+
+  .split{display:inline-flex;padding:4px;gap:4px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px}
+  .split button{background:transparent;border:0;border-radius:999px;cursor:pointer;padding:11px 20px;font-size:14px;font-weight:700;color:var(--steel-mid);transition:background .15s,color .15s}
+  .split button[aria-checked="true"]{background:var(--steel-hi);color:var(--ink)}
+
+  .bar{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin:24px 0 26px}
+  .draw{background:var(--gochu);color:#fff;border:0;font-family:var(--display);font-size:19px;
+    padding:16px 30px 14px;border-radius:999px;cursor:pointer;
+    box-shadow:0 10px 0 -4px rgba(225,68,43,.35),0 14px 30px rgba(0,0,0,.35);transition:transform .12s,box-shadow .12s}
+  .draw:active{transform:translateY(2px);box-shadow:0 6px 0 -4px rgba(225,68,43,.35)}
+  .draw[disabled]{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+  .ghost{background:transparent;color:var(--steel-mid);border:1px solid var(--line);border-radius:999px;padding:14px 20px;font-size:14px;font-weight:600;cursor:pointer}
+  .ghost:active{color:var(--steel-hi);border-color:rgba(255,255,255,.4)}
+  .status{margin-left:auto;font-size:13px;color:var(--steel-dark);font-variant-numeric:tabular-nums}
+
+  .trays{display:grid;gap:18px}
+  .trays[data-teams="2"]{grid-template-columns:repeat(2,1fr)}
+  .trays[data-teams="3"]{grid-template-columns:repeat(3,1fr)}
+  .tray{background:linear-gradient(160deg,#F4F7F8,var(--steel) 46%,#B7C0C5);border-radius:20px;padding:16px 16px 18px;position:relative;
+    box-shadow:inset 0 2px 0 rgba(255,255,255,.9),inset 0 -3px 8px rgba(0,0,0,.18),0 18px 34px rgba(0,0,0,.4)}
+  .tray::after{content:"";position:absolute;inset:8px;border-radius:14px;border:1px solid rgba(255,255,255,.5);pointer-events:none}
+  .tag{display:flex;align-items:baseline;gap:8px;margin:2px 4px 14px;position:relative;z-index:1}
+  .tag b{font-family:var(--display);font-size:19px;color:var(--ink)}
+  .tag span{font-size:11px;font-weight:700;letter-spacing:.14em;color:var(--steel-dark)}
   .slots{display:grid;grid-template-columns:1fr 1fr;gap:10px;position:relative;z-index:1}
-  .slot{
-    aspect-ratio:1/.82;
-    border-radius:12px;
-    background:linear-gradient(180deg,#AFB9BE,#D6DCDF 60%,#C4CCD0);
-    box-shadow:inset 0 3px 7px rgba(0,0,0,.28), inset 0 -2px 0 rgba(255,255,255,.6);
-    display:flex;align-items:center;justify-content:center;
-    padding:6px;
-    overflow:hidden;
-  }
-  .name{
-    font-family:var(--display);
-    font-size:clamp(19px,4.6vw,29px);
-    color:var(--ink);
-    letter-spacing:.01em;
-    text-shadow:0 1px 0 rgba(255,255,255,.6);
-    text-align:center;line-height:1.1;
-  }
-  .slot.empty .name{color:var(--steel-dark);opacity:.5;font-size:26px}
+  .slot{aspect-ratio:1/.82;border-radius:12px;background:linear-gradient(180deg,#AFB9BE,#D6DCDF 60%,#C4CCD0);
+    box-shadow:inset 0 3px 7px rgba(0,0,0,.28),inset 0 -2px 0 rgba(255,255,255,.6);
+    display:flex;align-items:center;justify-content:center;padding:6px;overflow:hidden}
+  .slot.wide{grid-column:1/-1;aspect-ratio:2/.82}
+  .name{font-family:var(--display);font-size:clamp(20px,5vw,27px);color:var(--ink);text-shadow:0 1px 0 rgba(255,255,255,.6);text-align:center;line-height:1.1}
+  .slot.empty .name{color:var(--steel-dark);opacity:.5;font-size:24px}
   .slot.rolling .name{opacity:.55;filter:blur(.4px)}
   .slot.land{animation:land .42s cubic-bezier(.2,1.5,.4,1)}
-  @keyframes land{
-    0%{transform:scale(.7) translateY(-16px);opacity:0}
-    60%{transform:scale(1.06) translateY(0);opacity:1}
-    100%{transform:scale(1)}
-  }
+  @keyframes land{0%{transform:scale(.7) translateY(-16px);opacity:0}60%{transform:scale(1.06);opacity:1}100%{transform:scale(1)}}
   .tray.hit{animation:shake .3s ease}
   @keyframes shake{25%{transform:translateY(-3px)}75%{transform:translateY(2px)}}
 
-  /* ── 오늘의 메뉴 ── */
-  .menu-box{margin-top:26px}
-  .menu-card{
-    background:linear-gradient(135deg,var(--gochu),#c73a24);
-    border-radius:20px;padding:22px 24px;
-    display:flex;align-items:center;gap:18px;flex-wrap:wrap;
-    box-shadow:0 18px 34px rgba(225,68,43,.28);
-  }
-  .menu-card-text{flex:1;min-width:160px}
-  .menu-eyebrow{
-    display:block;font-size:11px;letter-spacing:.2em;font-weight:700;
-    color:rgba(255,255,255,.75);text-transform:uppercase;margin-bottom:6px;
-  }
-  .menu-name{font-family:var(--display);font-size:clamp(24px,5vw,34px);color:#fff}
-  .menu-card .ghost{border-color:rgba(255,255,255,.55);color:#fff;flex:none}
-  .menu-card .ghost:hover{border-color:#fff;color:#fff}
+  .shelf{margin-top:20px;padding:14px 16px;border:1px dashed var(--line);border-radius:14px;display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+  .shelf b{font-size:11px;font-weight:800;letter-spacing:.16em;color:var(--steel-dark)}
+  .shelf span{font-size:14px;color:var(--steel-mid)}
+  .shelf.none{display:none}
 
-  /* ── 편집기 ── */
-  details{margin-top:30px;border-top:1px solid var(--line);padding-top:16px}
-  summary{
-    cursor:pointer;font-size:13px;font-weight:700;color:var(--steel-dark);
-    letter-spacing:.06em;list-style:none;
-  }
+  details{margin-top:26px;border-top:1px solid var(--line);padding-top:16px}
+  summary{cursor:pointer;font-size:13px;font-weight:700;color:var(--steel-dark);letter-spacing:.06em;list-style:none;padding:6px 0}
   summary::-webkit-details-marker{display:none}
   summary::before{content:"＋ ";color:var(--gochu)}
   details[open] summary::before{content:"− "}
-  .fields{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:16px}
-  .person-row,.menu-row{
-    display:flex;align-items:center;gap:8px;
-    background:rgba(255,255,255,.05);border:1px solid var(--line);
-    border-radius:10px;padding:6px 8px 6px 12px;
-  }
-  .person-row input[type="text"],.menu-row input[type="text"]{
-    flex:1;min-width:0;padding:9px 10px;border-radius:8px;
-    background:rgba(255,255,255,.06);border:1px solid var(--line);
-    color:var(--steel-hi);font-family:inherit;font-size:15px;
-  }
-  .person-row input[type="text"]:focus,.menu-row input[type="text"]:focus{background:rgba(255,255,255,.1)}
-  .leave{display:flex;align-items:center;gap:4px;font-size:11px;color:var(--steel-mid);white-space:nowrap;user-select:none}
-  .leave input{accent-color:var(--gochu)}
-  .rm{
-    flex:none;width:28px;height:28px;border-radius:8px;
-    background:transparent;color:var(--steel-dark);border:1px solid var(--line);
-    font-size:13px;line-height:1;
-  }
-  .rm:hover{color:var(--gochu);border-color:var(--gochu)}
-  .add-row{margin-top:12px}
-  .hint{margin:12px 0 0;font-size:12px;color:var(--steel-dark)}
+  .fields{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
+  .fields input{width:100%;padding:13px 12px;border-radius:9px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--steel-hi)}
+  .hint{margin:12px 0 0;font-size:12px;color:var(--steel-dark);line-height:1.6}
 
-  footer{margin-top:34px;font-size:12px;color:var(--steel-dark);letter-spacing:.04em}
+  /* ── 메뉴 게시판 ── */
+  .board{margin-top:clamp(40px,8vw,64px);border-top:2px solid var(--gochu);padding-top:26px}
+  .board-head{display:flex;flex-wrap:wrap;gap:12px;align-items:baseline;margin-bottom:6px}
+  .board h2{font-family:var(--display);font-size:clamp(26px,6vw,38px);margin:0}
+  .sync{font-size:11px;font-weight:700;letter-spacing:.1em;color:var(--steel-dark);display:inline-flex;align-items:center;gap:6px}
+  .sync::before{content:"";width:7px;height:7px;border-radius:50%;background:var(--steel-dark)}
+  .sync.live::before{background:#5BC47F}
+  .sync.warn::before{background:var(--danmuji)}
 
-  @media (max-width:620px){
-    .trays{grid-template-columns:1fr}
-    .fields{grid-template-columns:1fr}
-    .count{margin-left:0;width:100%}
+  .me{display:flex;flex-wrap:wrap;gap:10px;align-items:center;margin:18px 0}
+  .me label{font-size:12px;font-weight:800;letter-spacing:.14em;color:var(--steel-mid)}
+  .me select{
+    -webkit-appearance:none;appearance:none;
+    padding:13px 42px 13px 16px;border-radius:10px;
+    background-color:var(--steel-hi);
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8'><path d='M1 1l5 5 5-5' fill='none' stroke='%230F262B' stroke-width='2' stroke-linecap='round'/></svg>");
+    background-repeat:no-repeat;background-position:right 15px center;background-size:12px;
+    border:2px solid var(--danmuji);
+    color:var(--ink);font-weight:800;min-width:160px;cursor:pointer;
   }
-  @media (prefers-reduced-motion:reduce){
-    *{animation:none!important;transition:none!important}
+  .me select option{background:#fff;color:var(--ink);font-weight:700}
+  .me select:invalid,.me select.blank{color:#5B6B70;font-weight:600}
+
+  .propose{display:grid;grid-template-columns:1fr auto;gap:10px;margin-bottom:22px}
+  .propose input{padding:15px 16px;border-radius:12px;background:rgba(255,255,255,.07);border:1px solid var(--line);color:var(--steel-hi)}
+  .propose input::placeholder{color:var(--steel-dark)}
+  .propose button{background:var(--danmuji);color:var(--ink);border:0;border-radius:12px;padding:0 22px;font-weight:800;font-size:15px;cursor:pointer;white-space:nowrap}
+  .propose button:active{filter:brightness(.92)}
+
+  .cards{display:grid;gap:14px}
+  .card{background:var(--paper);color:#26211A;border-radius:16px;padding:18px 18px 16px;box-shadow:0 10px 24px rgba(0,0,0,.28)}
+  .card h3{font-family:var(--display);font-size:clamp(21px,5vw,26px);margin:0 0 6px;color:#1A1613}
+  .by{font-size:13px;color:#8A7F6C;font-weight:600}
+  .by b{color:var(--gochu)}
+  .joined{margin:12px 0 0;padding-top:12px;border-top:1px dashed var(--paper-line);display:flex;flex-wrap:wrap;gap:7px}
+  .who{background:#EDE5D2;border-radius:999px;padding:6px 12px;font-size:13px;font-weight:700;color:#4A4234}
+  .who.first{background:var(--gochu);color:#fff}
+  .comments{margin:12px 0 0;padding-top:12px;border-top:1px dashed var(--paper-line);display:grid;gap:9px}
+  .cmt{font-size:14px;line-height:1.5;color:#3A342B}
+  .cmt b{color:#1A1613}
+  .cmt small{color:#A79B86;margin-left:6px;font-size:11px}
+  .card-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .join{background:var(--gochu);color:#fff;border:0;border-radius:999px;padding:12px 20px;font-weight:800;font-size:14px;cursor:pointer}
+  .join.on{background:#DCD3BE;color:#6B6355}
+  .say{background:transparent;border:1px solid var(--paper-line);color:#6B6355;border-radius:999px;padding:12px 18px;font-weight:700;font-size:14px;cursor:pointer}
+  .del{margin-left:auto;background:none;border:0;color:#B4A991;font-size:13px;cursor:pointer;padding:12px 4px}
+  .saybox{display:none;grid-template-columns:1fr auto;gap:8px;margin-top:12px}
+  .saybox.open{display:grid}
+  .saybox input{padding:13px 14px;border-radius:10px;border:1px solid var(--paper-line);background:#FFFDF7;color:#26211A}
+  .saybox button{background:#26211A;color:var(--paper);border:0;border-radius:10px;padding:0 18px;font-weight:700;cursor:pointer}
+  .empty-board{color:var(--steel-dark);font-size:14px;line-height:1.7;padding:22px;border:1px dashed var(--line);border-radius:14px;text-align:center}
+  .setup{background:rgba(243,192,67,.1);border:1px solid rgba(243,192,67,.35);border-radius:14px;padding:16px 18px;font-size:13px;line-height:1.7;color:#F0E0BC;margin-bottom:20px}
+  .setup code{background:rgba(0,0,0,.3);padding:2px 6px;border-radius:5px;font-size:12px}
+
+  footer{margin-top:34px;font-size:12px;color:var(--steel-dark);line-height:1.7}
+
+  @media (max-width:760px){
+    .trays[data-teams="2"],.trays[data-teams="3"]{grid-template-columns:1fr}
+    .fields{grid-template-columns:repeat(2,1fr)}
+    .status{margin-left:0;width:100%}
+    .draw{flex:1;min-width:180px}
+    .ghost{flex:1;min-width:140px;text-align:center}
+    .slot{aspect-ratio:1/.62}
+    .slot.wide{aspect-ratio:2/.62}
+    .propose{grid-template-columns:1fr}
+    .propose button{padding:16px}
+    .card-actions .join,.card-actions .say{flex:1;text-align:center}
+    .del{flex-basis:100%;text-align:right;margin-left:0}
   }
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
 <div class="wrap">
-  <p class="eyebrow" id="eyebrow">9명 · 3테이블 · 완전 랜덤</p>
+  <p class="eyebrow">오늘의 점심 자리</p>
   <h1>오늘 점심<br><em>누구랑</em> 먹지</h1>
-  <p class="sub">팀 개수를 정하면 인원을 최대한 고르게 나눠 테이블에 앉힙니다. 연차인 사람은 체크만 해두면 이번 뽑기에서 빠져요.</p>
+  <p class="sub">연차인 사람은 눌러서 빼고, 테이블 수를 고른 뒤 뽑으면 됩니다.</p>
 
-  <div class="bar">
-    <button class="draw" id="draw" type="button">점심 짝 뽑기</button>
-    <label class="team-count">팀 개수 <input type="number" id="teamCount" min="1" value="3" inputmode="numeric"></label>
-    <button class="ghost" id="swap" type="button" hidden>한 명씩 자리 바꾸기</button>
-    <span class="count" id="count">아직 뽑기 전</span>
+  <div class="block">
+    <p class="label">오늘 나오는 사람 · 이름을 누르면 연차 처리</p>
+    <div class="roster" id="roster"></div>
   </div>
 
-  <div class="trays" id="trays"></div>
-
-  <div class="menu-box">
-    <div class="menu-card">
-      <div class="menu-card-text">
-        <span class="menu-eyebrow">오늘의 메뉴</span>
-        <div class="menu-name" id="menuName">?</div>
-      </div>
-      <button class="ghost" id="menuDraw" type="button">메뉴 뽑기</button>
+  <div class="block">
+    <p class="label">몇 테이블로 나눌까요</p>
+    <div class="split" role="radiogroup" aria-label="테이블 수">
+      <button role="radio" aria-checked="true" data-teams="2">2테이블</button>
+      <button role="radio" aria-checked="false" data-teams="3">3테이블</button>
     </div>
   </div>
+
+  <div class="bar">
+    <button class="draw" id="draw">점심 짝 뽑기</button>
+    <button class="ghost" id="swap" hidden>두 명 자리 바꾸기</button>
+    <span class="status" id="status"></span>
+  </div>
+
+  <div class="trays" id="trays" data-teams="2"></div>
+  <div class="shelf none" id="shelf"><b>오늘 연차</b><span id="shelfNames"></span></div>
 
   <details>
     <summary>명단 고치기</summary>
     <div class="fields" id="fields"></div>
-    <div class="add-row"><button class="ghost" id="addPerson" type="button">+ 팀원 추가</button></div>
-    <p class="hint">이름을 비우거나 삭제하면 명단에서 빠집니다. 연차 체크는 이번 뽑기에서만 제외해요. 인원이 팀 수로 안 나눠떨어지면 앞쪽 테이블부터 한 명씩 더 배정됩니다.</p>
+    <p class="hint">이름을 바꾸거나 비워서 지울 수 있어요. 빈 칸에 새 이름을 적으면 인원이 늘어납니다.</p>
   </details>
 
-  <details>
-    <summary>메뉴 후보 고치기</summary>
-    <div class="fields" id="menuFields"></div>
-    <div class="add-row"><button class="ghost" id="addMenu" type="button">+ 메뉴 추가</button></div>
-    <p class="hint">여기 적힌 메뉴 중 하나를 랜덤으로 추천해요.</p>
-  </details>
+  <!-- ── 메뉴 게시판 ── -->
+  <section class="board">
+    <div class="board-head">
+      <h2>오늘 메뉴 제안</h2>
+      <span class="sync" id="sync">연결 확인 중</span>
+    </div>
+    <p class="sub" id="boardDate"></p>
 
-  <footer>같은 조합이 연달아 나오면 알아서 한 번 더 섞습니다.</footer>
+    <div class="setup" id="setup" hidden>
+      아직 공유 설정 전이라 <b>이 브라우저에서만</b> 보입니다. 코드 맨 위 <code>CONFIG</code>에 JSONBin의 <code>BIN_ID</code>와 <code>ACCESS_KEY</code>를 넣으면 모두가 같은 목록을 보게 돼요.
+    </div>
+
+    <div class="me">
+      <label for="me">나는</label>
+      <select id="me"><option value="">이름 선택</option></select>
+    </div>
+
+    <div class="propose">
+      <input id="menuInput" placeholder="예: 소고기국밥, 마라탕, 회사 앞 돈까스" maxlength="40" aria-label="제안할 메뉴">
+      <button id="proposeBtn">제안하기</button>
+    </div>
+
+    <div class="cards" id="cards"></div>
+  </section>
+
+  <footer>
+    제안과 댓글은 매일 자정에 새로 시작합니다. 인원이 딱 나눠떨어지지 않으면 앞 테이블부터 한 명씩 더 앉아요.
+  </footer>
 </div>
 
 <script>
-const DEFAULT = ["강한범","최진영","최여진","김새롬","김예리","김송정","곽현규","오현진","허준서"];
-const DEFAULT_MENUS = ["김치찌개","된장찌개","제육볶음","돈까스","초밥","파스타","짜장면","짬뽕","냉면","순대국","삼겹살","국밥","쌀국수","마라탕","카레","비빔밥"];
+/* ════════ 공유 설정 ════════
+   1) jsonbin.io 가입 → Create Bin → 내용에 {"proposals":[]} 저장 → 주소의 Bin ID 복사
+   2) API Keys → Access Key 생성 (Read/Update 체크) → 아래에 붙여넣기            */
+const CONFIG = {
+  BIN_ID: "6a83c9bcda38895dfef118a3",       // 예: "665f1c2eacd3cb34a8xxxxxx"
+  ACCESS_KEY: "$2a$10$dALZBPSkxTZrRFRZ4crKauOcJsiDGl4/tsNPudh9QuiE/pan81idm"    // 예: "$2a$10$xxxxxxxxxxxxxxxxxxxxxx"
+};
+/* ══════════════════════════ */
 
-let people = DEFAULT.map(n=>({name:n, onLeave:false}));
-let menus = [...DEFAULT_MENUS];
-let lastKey = null;
-let lastMenu = null;
-let trayMenus = [];
-let busy = false;
+const DEFAULT = ["강한범","최진영","최여진","김새롬","김예리","김송정","곽현규","오현진"];
+let roster = DEFAULT.map(n => ({name:n, in:true}));
+let teams = 2, lastKey = null, busy = false;
 
-const eyebrowEl = document.getElementById("eyebrow");
-const fields = document.getElementById("fields");
-const menuFields = document.getElementById("menuFields");
-const traysEl = document.getElementById("trays");
-const drawBtn = document.getElementById("draw");
-const swapBtn = document.getElementById("swap");
-const countEl = document.getElementById("count");
-const teamInput = document.getElementById("teamCount");
-const addPersonBtn = document.getElementById("addPerson");
-const addMenuBtn = document.getElementById("addMenu");
-const menuNameEl = document.getElementById("menuName");
-const menuDrawBtn = document.getElementById("menuDraw");
+const $ = id => document.getElementById(id);
+const rosterEl=$("roster"), fieldsEl=$("fields"), traysEl=$("trays"),
+      shelfEl=$("shelf"), shelfNames=$("shelfNames"), drawBtn=$("draw"),
+      swapBtn=$("swap"), statusEl=$("status");
+const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
-const reduce = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const active  = () => roster.filter(p => p.in && p.name).map(p => p.name);
+const resting = () => roster.filter(p => !p.in && p.name).map(p => p.name);
 
-function escapeHtml(str){
-  return String(str).replace(/[&<>"']/g, c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
-}
-function wait(ms){ return new Promise(r=>setTimeout(r,ms)); }
-function shuffle(arr){
-  const a = [...arr];
-  for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
-    [a[i],a[j]] = [a[j],a[i]];
-  }
-  return a;
-}
-
-/* ── 명단 편집 ── */
-function renderPeopleEditor(){
-  fields.innerHTML = "";
-  people.forEach((p,i)=>{
-    const row = document.createElement("div");
-    row.className = "person-row";
-    row.innerHTML =
-      `<input type="text" value="${escapeHtml(p.name)}" aria-label="${i+1}번 이름">` +
-      `<label class="leave"><input type="checkbox"${p.onLeave ? " checked" : ""}> 연차</label>` +
-      `<button class="rm" type="button" aria-label="삭제">✕</button>`;
-    const nameInput = row.querySelector('input[type="text"]');
-    const leaveInput = row.querySelector('input[type="checkbox"]');
-    nameInput.addEventListener("input", ()=>{ people[i].name = nameInput.value; onRosterChange(); });
-    leaveInput.addEventListener("change", ()=>{ people[i].onLeave = leaveInput.checked; onRosterChange(); });
-    row.querySelector(".rm").addEventListener("click", ()=>{
-      people.splice(i,1);
-      renderPeopleEditor();
-      onRosterChange();
-    });
-    fields.appendChild(row);
+/* ───────── 뽑기 ───────── */
+function drawRoster(){
+  rosterEl.innerHTML = "";
+  roster.forEach((p,i) => {
+    if(!p.name) return;
+    const b = document.createElement("button");
+    b.className="chip"; b.type="button";
+    b.setAttribute("aria-pressed", p.in);
+    b.innerHTML = p.name + ' <span class="off">연차</span>';
+    b.onclick = () => { roster[i].in = !roster[i].in; refresh(); };
+    rosterEl.appendChild(b);
   });
 }
-addPersonBtn.addEventListener("click", ()=>{
-  people.push({name:"", onLeave:false});
-  renderPeopleEditor();
-  const inputs = fields.querySelectorAll('input[type="text"]');
-  inputs[inputs.length-1].focus();
-});
-function onRosterChange(){
-  lastKey = null;
-  buildSlots();
-  if(!busy) countEl.textContent = getActivePeople().length + "명 대기 중";
-}
-
-/* ── 메뉴 후보 편집 ── */
-function renderMenuEditor(){
-  menuFields.innerHTML = "";
-  menus.forEach((m,i)=>{
-    const row = document.createElement("div");
-    row.className = "menu-row";
-    row.innerHTML =
-      `<input type="text" value="${escapeHtml(m)}" aria-label="메뉴 ${i+1}">` +
-      `<button class="rm" type="button" aria-label="삭제">✕</button>`;
-    row.querySelector('input[type="text"]').addEventListener("input", (e)=>{ menus[i] = e.target.value; });
-    row.querySelector(".rm").addEventListener("click", ()=>{
-      menus.splice(i,1);
-      renderMenuEditor();
-    });
-    menuFields.appendChild(row);
-  });
-}
-addMenuBtn.addEventListener("click", ()=>{
-  menus.push("");
-  renderMenuEditor();
-  const inputs = menuFields.querySelectorAll('input[type="text"]');
-  inputs[inputs.length-1].focus();
-});
-function drawMenu(){
-  const pool = menus.map(m=>m.trim()).filter(Boolean);
-  if(pool.length === 0){ menuNameEl.textContent = "메뉴를 먼저 등록해주세요"; return; }
-  let pick;
-  do{ pick = pool[Math.floor(Math.random()*pool.length)]; } while(pool.length>1 && pick===lastMenu);
-  lastMenu = pick;
-  menuNameEl.textContent = pick;
-}
-menuDrawBtn.addEventListener("click", drawMenu);
-
-/* ── 팀 나누기 ── */
-function getActivePeople(){
-  return people.filter(p=>!p.onLeave && p.name.trim());
-}
-function getEffectiveTeamCount(commit){
-  const maxTeams = Math.max(1, getActivePeople().length);
-  let v = parseInt(teamInput.value, 10);
-  if(!Number.isFinite(v) || v < 1) v = 1;
-  v = Math.min(v, maxTeams);
-  teamInput.max = String(maxTeams);
-  if(commit) teamInput.value = String(v);
-  return v;
-}
-function distributeSizes(total, count){
-  const sizes = [];
-  const base = Math.floor(total/count);
-  const extra = total % count;
-  for(let i=0;i<count;i++) sizes.push(base + (i<extra ? 1 : 0));
-  return sizes;
-}
-function updateEyebrow(activeCount, teamN){
-  eyebrowEl.textContent = activeCount + "명 · " + teamN + "테이블 · 완전 랜덤";
-}
-function render(box, n, empty){
-  box.innerHTML = "";
-  for(let i=0;i<n;i++){
-    const s = document.createElement("div");
-    s.className = "slot" + (empty ? " empty" : "");
-    s.innerHTML = '<span class="name">?</span>';
-    box.appendChild(s);
+function drawFields(){
+  fieldsEl.innerHTML = "";
+  for(let i=0;i<roster.length+1;i++){
+    const input = document.createElement("input");
+    input.value = roster[i] ? roster[i].name : "";
+    input.placeholder = "이름 추가";
+    input.setAttribute("aria-label",(i+1)+"번 이름");
+    input.onchange = () => {
+      const v = input.value.trim();
+      if(roster[i]) roster[i].name = v; else if(v) roster.push({name:v,in:true});
+      roster = roster.filter(p => p.name);
+      lastKey = null; refresh(); drawFields(); fillMeOptions();
+    };
+    fieldsEl.appendChild(input);
   }
 }
-function renderTrays(sizes, empty){
-  traysEl.innerHTML = "";
-  sizes.forEach((n,i)=>{
+const sizes = (n,k) => { const b=Math.floor(n/k), r=n%k;
+  return Array.from({length:k},(_,i)=>b+(i<r?1:0)); };
+
+function buildTrays(names){
+  const n = names ? names.length : active().length;
+  const dist = sizes(n, teams);
+  traysEl.dataset.teams = teams;
+  traysEl.innerHTML = ""; let c = 0;
+  dist.forEach((size,t) => {
     const tray = document.createElement("div");
     tray.className = "tray";
-    tray.id = "tray"+i;
-    tray.innerHTML =
-      `<div class="tag"><b>${i+1}번 테이블</b><span>TABLE ${String(i+1).padStart(2,"0")}</span>` +
-      `<span class="menu-pill" id="menuPill${i}" hidden></span>` +
-      `<button class="remenu" id="remenu${i}" type="button" aria-label="메뉴 다시 뽑기" hidden>⟳</button></div>` +
-      `<div class="slots" id="slots${i}"></div>`;
-    traysEl.appendChild(tray);
+    tray.innerHTML = '<div class="tag"><b>'+(t+1)+'번 테이블</b><span>'+size+'명</span></div>';
+    const slots = document.createElement("div"); slots.className = "slots";
+    for(let i=0;i<size;i++){
+      const s = document.createElement("div");
+      s.className = "slot" + (names?"":" empty") + ((size%2===1 && i===size-1)?" wide":"");
+      s.innerHTML = '<span class="name">'+(names?names[c]:"?")+'</span>';
+      slots.appendChild(s); c++;
+    }
+    tray.appendChild(slots); traysEl.appendChild(tray);
   });
-  sizes.forEach((n,i)=> render(document.getElementById("slots"+i), n, !!empty));
 }
-traysEl.addEventListener("click", (e)=>{
-  const btn = e.target.closest(".remenu");
-  if(!btn) return;
-  rerollTableMenu(Number(btn.id.replace("remenu","")));
+function refresh(){
+  drawRoster();
+  const outs = resting();
+  shelfEl.classList.toggle("none", !outs.length);
+  shelfNames.textContent = outs.join(", ");
+  const n = active().length;
+  drawBtn.disabled = n < teams;
+  statusEl.textContent = n < teams ? teams+"명 이상 필요해요" : n+"명 · "+sizes(n,teams).join("+");
+  swapBtn.hidden = true; buildTrays(null); drawBtn.textContent = "점심 짝 뽑기";
+}
+document.querySelectorAll(".split button").forEach(b => b.onclick = () => {
+  document.querySelectorAll(".split button").forEach(x => x.setAttribute("aria-checked", x===b));
+  teams = +b.dataset.teams; lastKey = null; refresh();
 });
-function buildSlots(){
-  const active = getActivePeople();
-  const count = getEffectiveTeamCount(false);
-  const sizes = distributeSizes(active.length, count);
-  renderTrays(sizes, true);
-  updateEyebrow(active.length, sizes.length);
-}
-
-function drawTableMenus(n){
-  const pool = menus.map(m=>m.trim()).filter(Boolean);
-  if(pool.length === 0 || n === 0) return;
-  trayMenus = pool.length >= n
-    ? shuffle(pool).slice(0,n)
-    : Array.from({length:n}, ()=> pool[Math.floor(Math.random()*pool.length)]);
-  showTableMenus();
-}
-function showTableMenus(){
-  trayMenus.forEach((m,i)=>{
-    const pill = document.getElementById("menuPill"+i);
-    const btn = document.getElementById("remenu"+i);
-    if(pill){ pill.textContent = "🍽 " + m; pill.hidden = false; }
-    if(btn){ btn.hidden = false; }
-  });
-}
-function rerollTableMenu(i){
-  const pool = menus.map(m=>m.trim()).filter(Boolean);
-  if(pool.length === 0) return;
-  let pick;
-  do{ pick = pool[Math.floor(Math.random()*pool.length)]; } while(pool.length>1 && pick===trayMenus[i]);
-  trayMenus[i] = pick;
-  showTableMenus();
-}
+const shuffle = arr => { const a=[...arr];
+  for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
+  return a; };
+function keyOf(list,dist){ const g=[]; let c=0;
+  dist.forEach(s=>{g.push(list.slice(c,c+s).sort().join("·")); c+=s;}); return g.sort().join("//"); }
+const wait = ms => new Promise(r => setTimeout(r,ms));
 
 async function draw(){
   if(busy) return;
-  const active = getActivePeople();
-  if(active.length < 2){ countEl.textContent = "참여 인원을 두 명 이상 남겨주세요"; return; }
-  const count = getEffectiveTeamCount(true);
-  busy = true; drawBtn.disabled = true; swapBtn.hidden = true;
-  countEl.textContent = "섞는 중…";
-
-  const sizes = distributeSizes(active.length, count);
-  let teams, key, tries = 0;
-  do{
-    const mixed = shuffle(active.map(p=>p.name));
-    teams = []; let idx = 0;
-    for(const s of sizes){ teams.push(mixed.slice(idx, idx+s)); idx += s; }
-    key = teams.map(t=>t.slice().sort().join("·")).sort().join("//");
-    tries++;
-  } while(key === lastKey && tries < 12);
+  const pool = active(); if(pool.length < teams) return;
+  busy = true; drawBtn.disabled = true; swapBtn.hidden = true; statusEl.textContent = "섞는 중…";
+  const dist = sizes(pool.length, teams);
+  let order, key, tries = 0;
+  do{ order = shuffle(pool); key = keyOf(order,dist); tries++; } while(key===lastKey && tries<15);
   lastKey = key;
-
-  renderTrays(sizes, false);
-  const cells = [], cellTray = [];
-  sizes.forEach((n,ti)=>{
-    const box = document.getElementById("slots"+ti);
-    [...box.children].forEach(c=>{ cells.push(c); cellTray.push(ti); });
-  });
-  const all = teams.flat();
-
-  if(reduce){
-    cells.forEach((c,i)=> c.querySelector(".name").textContent = all[i]);
-  } else {
-    const pool = active.map(p=>p.name);
-    const timers = cells.map(c=>{
-      c.classList.add("rolling");
-      return setInterval(()=>{
-        c.querySelector(".name").textContent = pool[Math.floor(Math.random()*pool.length)];
-      }, 55);
-    });
+  buildTrays(order);
+  const cells = [...traysEl.querySelectorAll(".slot")];
+  if(reduce){ cells.forEach((c,i)=>c.querySelector(".name").textContent = order[i]); }
+  else{
+    const timers = cells.map(c => { c.classList.add("rolling"); c.querySelector(".name").textContent="?";
+      return setInterval(()=>{ c.querySelector(".name").textContent = pool[Math.floor(Math.random()*pool.length)]; },55); });
     for(let i=0;i<cells.length;i++){
-      await wait(i===0 ? 620 : 260);
+      await wait(i===0?600:230);
       clearInterval(timers[i]);
       cells[i].classList.remove("rolling");
-      cells[i].querySelector(".name").textContent = all[i];
+      cells[i].querySelector(".name").textContent = order[i];
       cells[i].classList.add("land");
-      const tray = document.getElementById("tray"+cellTray[i]);
-      tray.classList.add("hit");
-      setTimeout(()=>tray.classList.remove("hit"), 300);
+      const tray = cells[i].closest(".tray");
+      tray.classList.add("hit"); setTimeout(()=>tray.classList.remove("hit"),300);
     }
   }
+  statusEl.textContent = dist.join("명 · ")+"명으로 나눴어요";
+  drawBtn.textContent = "다시 뽑기"; drawBtn.disabled = false;
+  swapBtn.hidden = cells.length < 2; busy = false;
+}
+swapBtn.onclick = () => {
+  if(busy) return;
+  const trays = [...traysEl.querySelectorAll(".tray")].filter(t=>t.querySelectorAll(".slot").length);
+  if(trays.length < 2) return;
+  const [a,b] = shuffle(trays).slice(0,2);
+  const pick = t => { const s = t.querySelectorAll(".slot"); return s[Math.floor(Math.random()*s.length)]; };
+  const sa = pick(a), sb = pick(b);
+  const na = sa.querySelector(".name"), nb = sb.querySelector(".name");
+  const tmp = na.textContent; na.textContent = nb.textContent; nb.textContent = tmp;
+  [sa,sb].forEach(c=>{c.classList.remove("land"); void c.offsetWidth; c.classList.add("land");});
+  statusEl.textContent = tmp+" ↔ "+na.textContent+" 자리를 바꿨어요";
+  lastKey = null;
+};
+drawBtn.onclick = draw;
 
-  drawTableMenus(sizes.length);
-  countEl.textContent = sizes.map(n=>n+"명").join(" · ") + "로 나눴어요";
-  drawBtn.textContent = "다시 뽑기";
-  drawBtn.disabled = false;
-  swapBtn.hidden = sizes.length < 2;
-  busy = false;
+/* ───────── 메뉴 게시판 ───────── */
+const cardsEl=$("cards"), meSel=$("me"), syncEl=$("sync"),
+      menuInput=$("menuInput"), proposeBtn=$("proposeBtn"), setupEl=$("setup");
+const shared = !!(CONFIG.BIN_ID && CONFIG.ACCESS_KEY);
+const API = "https://api.jsonbin.io/v3/b/" + CONFIG.BIN_ID;
+const HEAD = { "Content-Type":"application/json", "X-Access-Key":CONFIG.ACCESS_KEY };
+const today = () => new Date().toLocaleDateString("sv-SE"); // YYYY-MM-DD (로컬 기준)
+let board = { proposals: [] };
+let saving = false;
+
+$("boardDate").textContent =
+  new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"long"}) + " 메뉴판";
+
+function fillMeOptions(){
+  const cur = meSel.value;
+  meSel.innerHTML = '<option value="">이름 선택</option>';
+  roster.forEach(p => { if(!p.name) return;
+    const o = document.createElement("option"); o.value = o.textContent = p.name; meSel.appendChild(o); });
+  if([...meSel.options].some(o=>o.value===cur)) meSel.value = cur;
+  meSel.classList.toggle("blank", !meSel.value);
+}
+const me = () => meSel.value;
+function needName(){
+  if(me()) return false;
+  syncEl.textContent = "이름을 먼저 골라주세요";
+  syncEl.className = "sync warn";
+  meSel.focus();
+  return true;
+}
+function setSync(text, cls){ syncEl.textContent = text; syncEl.className = "sync " + (cls||""); }
+
+async function pull(quiet){
+  if(!shared){ setupEl.hidden = false; setSync("이 기기에서만 보임","warn"); render(); return; }
+  try{
+    const r = await fetch(API + "/latest?meta=false", { headers:{ "X-Access-Key":CONFIG.ACCESS_KEY }, cache:"no-store" });
+    if(!r.ok) throw new Error(r.status);
+    const d = await r.json();
+    const rec = d && d.record ? d.record : d;
+    board = { proposals: Array.isArray(rec.proposals) ? rec.proposals : [] };
+    setSync("실시간 공유 중","live");
+    render();
+  }catch(e){
+    if(!quiet) setSync("연결 실패 · 설정을 확인해 주세요","warn");
+  }
+}
+async function push(){
+  if(!shared){ render(); return; }
+  if(saving) return;
+  saving = true; setSync("저장 중…");
+  try{
+    // 남의 글이 덮이지 않게 최신본을 한 번 더 읽고 합칩니다
+    const r = await fetch(API + "/latest?meta=false", { headers:{ "X-Access-Key":CONFIG.ACCESS_KEY }, cache:"no-store" });
+    if(r.ok){
+      const d = await r.json();
+      const rec = d && d.record ? d.record : d;
+      const remote = Array.isArray(rec.proposals) ? rec.proposals : [];
+      const map = new Map(remote.map(p => [p.id, p]));
+      board.proposals.forEach(p => map.set(p.id, p));
+      board.proposals = [...map.values()].filter(p => board.deleted ? !board.deleted.includes(p.id) : true);
+    }
+    const keep = board.proposals.filter(p => p.date === today());
+    board.proposals = keep;
+    const res = await fetch(API, { method:"PUT", headers:HEAD, body:JSON.stringify({proposals:keep}) });
+    if(!res.ok) throw new Error(res.status);
+    setSync("실시간 공유 중","live");
+  }catch(e){
+    setSync("저장 실패 · 다시 시도해 주세요","warn");
+  }
+  saving = false; render();
 }
 
-swapBtn.addEventListener("click", ()=>{
-  if(busy) return;
-  const trays = [...traysEl.children].filter(t=>t.querySelector(".slots").children.length>0);
-  if(trays.length < 2) return;
-  let ta, tb;
-  do{
-    ta = trays[Math.floor(Math.random()*trays.length)];
-    tb = trays[Math.floor(Math.random()*trays.length)];
-  } while(ta === tb);
-  const a = [...ta.querySelector(".slots").children];
-  const b = [...tb.querySelector(".slots").children];
-  const i = Math.floor(Math.random()*a.length);
-  const j = Math.floor(Math.random()*b.length);
-  const na = a[i].querySelector(".name"), nb = b[j].querySelector(".name");
-  const tmp = na.textContent; na.textContent = nb.textContent; nb.textContent = tmp;
-  [a[i], b[j]].forEach(c=>{ c.classList.remove("land"); void c.offsetWidth; c.classList.add("land"); });
-  countEl.textContent = tmp + " ↔ " + na.textContent + " 자리를 바꿨어요";
-  lastKey = null;
-});
+function render(){
+  const list = board.proposals
+    .filter(p => p.date === today())
+    .sort((a,b) => (b.joins.length - a.joins.length) || (a.ts - b.ts));
+  cardsEl.innerHTML = "";
+  if(!list.length){
+    cardsEl.innerHTML = '<p class="empty-board">아직 제안이 없어요.<br>먹고 싶은 메뉴를 먼저 올려보세요.</p>';
+    return;
+  }
+  list.forEach(p => {
+    const mine = me() && p.joins.includes(me());
+    const card = document.createElement("article");
+    card.className = "card";
+    card.innerHTML =
+      '<h3>'+esc(p.menu)+'</h3>'+
+      '<p class="by">발의자 <b>'+esc(p.by)+'</b> · 합류 '+p.joins.length+'명</p>'+
+      '<div class="joined">'+p.joins.map((n,i)=>'<span class="who'+(i===0?" first":"")+'">'+esc(n)+'</span>').join("")+'</div>'+
+      (p.comments.length ? '<div class="comments">'+p.comments.map(c=>
+        '<p class="cmt"><b>'+esc(c.by)+'</b> '+esc(c.text)+'<small>'+c.at+'</small></p>').join("")+'</div>' : '')+
+      '<div class="card-actions">'+
+        '<button class="join'+(mine?" on":"")+'" data-act="join">'+(mine?"합류 취소":"저도 먹고 싶어요")+'</button>'+
+        '<button class="say" data-act="say">한마디</button>'+
+        (me()===p.by ? '<button class="del" data-act="del">제안 지우기</button>' : '')+
+      '</div>'+
+      '<div class="saybox"><input placeholder="예: 저도 먹고 싶습니다 합류합니다" maxlength="60"><button>남기기</button></div>';
 
-teamInput.addEventListener("input", ()=>{
-  lastKey = null;
-  buildSlots();
-  if(!busy) countEl.textContent = getActivePeople().length + "명 대기 중";
-});
-teamInput.addEventListener("change", ()=>{
-  getEffectiveTeamCount(true);
-  buildSlots();
-});
+    card.querySelector('[data-act="join"]').onclick = () => {
+      if(needName()) return;
+      const i = p.joins.indexOf(me());
+      if(i > -1){ if(me() === p.by) return; p.joins.splice(i,1); } else p.joins.push(me());
+      push();
+    };
+    const box = card.querySelector(".saybox");
+    card.querySelector('[data-act="say"]').onclick = () => {
+      if(needName()) return;
+      box.classList.toggle("open");
+      if(box.classList.contains("open")) box.querySelector("input").focus();
+    };
+    const send = () => {
+      const v = box.querySelector("input").value.trim();
+      if(!v || needName()) return;
+      p.comments.push({ by: me(), text: v, at: nowHM() });
+      if(!p.joins.includes(me())) p.joins.push(me());
+      box.querySelector("input").value = "";
+      push();
+    };
+    box.querySelector("button").onclick = send;
+    box.querySelector("input").onkeydown = e => { if(e.key === "Enter") send(); };
+    const del = card.querySelector('[data-act="del"]');
+    if(del) del.onclick = () => {
+      if(!confirm("이 제안을 지울까요?")) return;
+      board.proposals = board.proposals.filter(x => x.id !== p.id);
+      board.deleted = [...(board.deleted||[]), p.id];
+      push();
+    };
+    cardsEl.appendChild(card);
+  });
+}
+function esc(s){ return String(s).replace(/[&<>"']/g, c =>
+  ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c])); }
+function nowHM(){ return new Date().toLocaleTimeString("ko-KR",{hour:"2-digit",minute:"2-digit"}); }
 
-drawBtn.addEventListener("click", draw);
+proposeBtn.onclick = () => {
+  const menu = menuInput.value.trim();
+  if(!menu){ menuInput.focus(); return; }
+  if(needName()) return;
+  board.proposals.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    menu, by: me(), joins:[me()], comments:[], date: today(), ts: Date.now()
+  });
+  menuInput.value = "";
+  push();
+};
+menuInput.onkeydown = e => { if(e.key === "Enter") proposeBtn.click(); };
+meSel.onchange = () => { meSel.classList.toggle("blank", !meSel.value); if(me()) setSync(shared ? "실시간 공유 중" : "이 기기에서만 보임", shared ? "live" : "warn"); render(); };
 
-renderPeopleEditor();
-renderMenuEditor();
-buildSlots();
+/* 주기적 동기화 (화면을 보고 있을 때만) */
+setInterval(() => { if(!document.hidden && !saving) pull(true); }, 12000);
+document.addEventListener("visibilitychange", () => { if(!document.hidden) pull(true); });
+
+/* 시작 */
+refresh(); drawFields(); fillMeOptions(); pull();
 </script>
 </body>
 </html>

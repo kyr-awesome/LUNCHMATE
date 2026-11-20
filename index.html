@@ -283,12 +283,13 @@
    1) jsonbin.io 가입 → Create Bin → 내용에 {"proposals":[]} 저장 → 주소의 Bin ID 복사
    2) API Keys → Access Key 생성 (Read/Update 체크) → 아래에 붙여넣기            */
 const CONFIG = {
-  BIN_ID: "6a83c9bcda38895dfef118a3",       // 예: "6a83c9bcda38895dfef118a3"
+  BIN_ID: "6a83c9bcda38895dfef118a3",       // 예: "665f1c2eacd3cb34a8xxxxxx"
   ACCESS_KEY: "$2a$10$dALZBPSkxTZrRFRZ4crKauOcJsiDGl4/tsNPudh9QuiE/pan81idm"    // 예: "$2a$10$xxxxxxxxxxxxxxxxxxxxxx"
 };
 /* ══════════════════════════ */
 
-const DEFAULT = ["강한범","최진영","최여진","김새롬","김예리","김송정","곽현규","허준서"];
+const DEFAULT = ["강한범","최진영","최여진","김새롬","김예리","김송정","곽현규","허준서",
+                 "김지언","김민지","김도희"];
 let roster = DEFAULT.map(n => ({name:n, in:true}));
 let teams = 2, lastKey = null, busy = false;
 
@@ -398,7 +399,24 @@ function afterRosterChange(){
   roster = roster.filter(p => p.name);
   namesTs = Date.now();
   lastKey = null;
+  saveLocal();                       // 이 기기에 먼저 저장 (새로고침해도 유지)
   refresh(); drawManage(); fillMeOptions(); push();
+}
+
+/* 명단을 이 기기에도 저장해 둡니다 — 공유 설정이 없거나 저장이 실패해도 새로고침에 안 사라지게 */
+const LS_KEY = "lunchMateRoster";
+function saveLocal(){
+  try{ localStorage.setItem(LS_KEY, JSON.stringify({ names: roster.map(p=>p.name), ts: namesTs })); }
+  catch(e){}
+}
+function loadLocal(){
+  try{
+    const d = JSON.parse(localStorage.getItem(LS_KEY) || "null");
+    if(d && Array.isArray(d.names) && d.names.length){
+      roster = d.names.map(n => ({ name:n, in:true }));
+      namesTs = d.ts || 0;
+    }
+  }catch(e){}
 }
 const sizes = (n,k) => { const b=Math.floor(n/k), r=n%k;
   return Array.from({length:k},(_,i)=>b+(i<r?1:0)); };
@@ -515,6 +533,7 @@ function applyNames(list, ts){
                    .map(n => ({ name:n, in: flags.has(n) ? flags.get(n) : true }));
   if(next.map(p=>p.name).join("|") === roster.map(p=>p.name).join("|")) return;
   roster = next;
+  saveLocal();
   refresh(); drawManage(); fillMeOptions();
   if(editing) editMsg("다른 분이 명단을 바꿔서 새로 불러왔어요");
 }
@@ -548,6 +567,10 @@ async function pull(quiet){
     applyNames(rec.names, rec.namesTs);
     setSync("실시간 공유 중","live");
     render();
+    // 내 명단이 더 최신인데 서버에 안 올라가 있으면 다시 올립니다
+    const mine = roster.map(p => p.name).join("|");
+    const theirs = (Array.isArray(rec.names) ? rec.names : []).join("|");
+    if(mine !== theirs && namesTs > (rec.namesTs || 0) && !saving) push();
   }catch(e){
     if(!quiet) setSync("연결 실패 · 설정을 확인해 주세요","warn");
   }
@@ -663,6 +686,7 @@ setInterval(() => { if(!document.hidden && !saving) pull(true); }, 12000);
 document.addEventListener("visibilitychange", () => { if(!document.hidden) pull(true); });
 
 /* 시작 */
+loadLocal();
 refresh(); drawManage(); fillMeOptions(); pull();
 </script>
 </body>

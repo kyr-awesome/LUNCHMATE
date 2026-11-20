@@ -51,6 +51,39 @@
   .chip .off{display:none;font-size:11px;font-weight:800;letter-spacing:.1em;text-decoration:none}
   .chip[aria-pressed="false"] .off{display:inline}
 
+  .labelrow{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}
+  .labelrow .label{margin:0}
+  .editbtn{background:transparent;border:1px solid var(--line);color:var(--steel-mid);
+    border-radius:999px;padding:7px 14px;font-size:12px;font-weight:800;letter-spacing:.04em;cursor:pointer;transition:all .15s}
+  .editbtn:active{color:var(--steel-hi)}
+  .editbtn[aria-pressed="true"]{background:var(--danmuji);border-color:var(--danmuji);color:var(--ink)}
+
+  /* 편집 모드 */
+  .roster.editing .chip{border-color:rgba(225,68,43,.5);border-style:solid;
+    background:rgba(225,68,43,.1);color:var(--steel-hi);text-decoration:none;padding-right:11px}
+  .roster.editing .chip::before{display:none}
+  .roster.editing .chip .off{display:none}
+  .roster.editing .chip .x{display:inline-flex;align-items:center;justify-content:center;
+    width:19px;height:19px;border-radius:50%;background:var(--gochu);color:#fff;font-size:13px;font-weight:800;line-height:1;flex:none}
+  .chip .x{display:none}
+  .editnote{margin:12px 0 0;font-size:13px;color:var(--danmuji);line-height:1.6}
+
+  .addrow{display:flex;gap:8px;max-width:340px}
+  .addrow input{flex:1;min-width:0;padding:12px 15px;border-radius:999px;background:rgba(255,255,255,.06);border:1px dashed var(--line);color:var(--steel-hi)}
+  .addrow input::placeholder{color:var(--steel-dark)}
+  .addrow button{background:rgba(243,192,67,.15);border:1px solid rgba(243,192,67,.45);color:var(--danmuji);
+    border-radius:999px;padding:12px 18px;font-size:14px;font-weight:800;cursor:pointer;white-space:nowrap}
+  .addrow button:active{background:rgba(243,192,67,.3)}
+
+  .editpanel{margin-top:14px;padding:16px;border-radius:16px;
+    background:rgba(243,192,67,.07);border:1px solid rgba(243,192,67,.3)}
+  .editsub{margin:18px 0 10px;font-size:11px;font-weight:800;letter-spacing:.18em;color:var(--danmuji)}
+  .manage{display:grid;grid-template-columns:repeat(auto-fill,minmax(140px,1fr));gap:8px}
+  .mrow{display:flex;gap:6px;align-items:center}
+  .mrow input{flex:1;min-width:0;padding:11px 13px;border-radius:10px;background:rgba(255,255,255,.08);border:1px solid var(--line);color:var(--steel-hi);font-size:15px}
+  .mrow input:focus{background:rgba(255,255,255,.14);border-color:var(--danmuji)}
+  .mrow input.saved{border-color:#5BC47F;background:rgba(91,196,127,.14)}
+
   .split{display:inline-flex;padding:4px;gap:4px;background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:999px}
   .split button{background:transparent;border:0;border-radius:999px;cursor:pointer;padding:11px 20px;font-size:14px;font-weight:700;color:var(--steel-mid);transition:background .15s,color .15s}
   .split button[aria-checked="true"]{background:var(--steel-hi);color:var(--ink)}
@@ -68,6 +101,7 @@
   .trays{display:grid;gap:18px}
   .trays[data-teams="2"]{grid-template-columns:repeat(2,1fr)}
   .trays[data-teams="3"]{grid-template-columns:repeat(3,1fr)}
+  .trays[data-teams="4"]{grid-template-columns:repeat(4,1fr)}
   .tray{background:linear-gradient(160deg,#F4F7F8,var(--steel) 46%,#B7C0C5);border-radius:20px;padding:16px 16px 18px;position:relative;
     box-shadow:inset 0 2px 0 rgba(255,255,255,.9),inset 0 -3px 8px rgba(0,0,0,.18),0 18px 34px rgba(0,0,0,.4)}
   .tray::after{content:"";position:absolute;inset:8px;border-radius:14px;border:1px solid rgba(255,255,255,.5);pointer-events:none}
@@ -97,8 +131,6 @@
   summary::-webkit-details-marker{display:none}
   summary::before{content:"＋ ";color:var(--gochu)}
   details[open] summary::before{content:"− "}
-  .fields{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:16px}
-  .fields input{width:100%;padding:13px 12px;border-radius:9px;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--steel-hi)}
   .hint{margin:12px 0 0;font-size:12px;color:var(--steel-dark);line-height:1.6}
 
   /* ── 메뉴 게시판 ── */
@@ -157,9 +189,11 @@
 
   footer{margin-top:34px;font-size:12px;color:var(--steel-dark);line-height:1.7}
 
+  @media (max-width:1000px){
+    .trays[data-teams="4"]{grid-template-columns:repeat(2,1fr)}
+  }
   @media (max-width:760px){
-    .trays[data-teams="2"],.trays[data-teams="3"]{grid-template-columns:1fr}
-    .fields{grid-template-columns:repeat(2,1fr)}
+    .trays[data-teams="2"],.trays[data-teams="3"],.trays[data-teams="4"]{grid-template-columns:1fr}
     .status{margin-left:0;width:100%}
     .draw{flex:1;min-width:180px}
     .ghost{flex:1;min-width:140px;text-align:center}
@@ -177,11 +211,23 @@
 <div class="wrap">
   <p class="eyebrow">오늘의 점심 자리</p>
   <h1>오늘 점심<br><em>누구랑</em> 먹지</h1>
-  <p class="sub">연차인 사람은 눌러서 빼고, 테이블 수를 고른 뒤 뽑으면 됩니다.</p>
+  <p class="sub">연차인 사람은 눌러서 빼고, 테이블 수를 고른 뒤 뽑으면 됩니다. 멤버 추가와 삭제는 누구나 할 수 있어요.</p>
 
   <div class="block">
-    <p class="label">오늘 나오는 사람 · 이름을 누르면 연차 처리</p>
+    <div class="labelrow">
+      <p class="label" id="rosterLabel">오늘 나오는 사람 · 이름을 누르면 연차 처리</p>
+      <button class="editbtn" id="editBtn" type="button" aria-pressed="false">멤버 편집</button>
+    </div>
     <div class="roster" id="roster"></div>
+    <div class="editpanel" id="editPanel" hidden>
+      <div class="addrow" id="addRow">
+        <input id="addName" placeholder="새 멤버 이름" maxlength="12" aria-label="추가할 이름">
+        <button id="addBtn" type="button">＋ 추가</button>
+      </div>
+      <p class="editsub">이름 고치기</p>
+      <div class="manage" id="manage"></div>
+      <p class="editnote" id="editNote">위 이름을 누르면 빼기 · 고친 이름은 모두의 화면에 그대로 반영됩니다.</p>
+    </div>
   </div>
 
   <div class="block">
@@ -189,6 +235,7 @@
     <div class="split" role="radiogroup" aria-label="테이블 수">
       <button role="radio" aria-checked="true" data-teams="2">2테이블</button>
       <button role="radio" aria-checked="false" data-teams="3">3테이블</button>
+      <button role="radio" aria-checked="false" data-teams="4">4테이블</button>
     </div>
   </div>
 
@@ -200,12 +247,6 @@
 
   <div class="trays" id="trays" data-teams="2"></div>
   <div class="shelf none" id="shelf"><b>오늘 연차</b><span id="shelfNames"></span></div>
-
-  <details>
-    <summary>명단 고치기</summary>
-    <div class="fields" id="fields"></div>
-    <p class="hint">이름을 바꾸거나 비워서 지울 수 있어요. 빈 칸에 새 이름을 적으면 인원이 늘어납니다.</p>
-  </details>
 
   <!-- ── 메뉴 게시판 ── -->
   <section class="board">
@@ -242,8 +283,8 @@
    1) jsonbin.io 가입 → Create Bin → 내용에 {"proposals":[]} 저장 → 주소의 Bin ID 복사
    2) API Keys → Access Key 생성 (Read/Update 체크) → 아래에 붙여넣기            */
 const CONFIG = {
-  BIN_ID: "",       // 예: "665f1c2eacd3cb34a8xxxxxx"
-  ACCESS_KEY: ""    // 예: "$2a$10$xxxxxxxxxxxxxxxxxxxxxx"
+  BIN_ID: "6a83c9bcda38895dfef118a3",       // 예: "6a83c9bcda38895dfef118a3"
+  ACCESS_KEY: "$2a$10$dALZBPSkxTZrRFRZ4crKauOcJsiDGl4/tsNPudh9QuiE/pan81idm"    // 예: "$2a$10$xxxxxxxxxxxxxxxxxxxxxx"
 };
 /* ══════════════════════════ */
 
@@ -252,9 +293,12 @@ let roster = DEFAULT.map(n => ({name:n, in:true}));
 let teams = 2, lastKey = null, busy = false;
 
 const $ = id => document.getElementById(id);
-const rosterEl=$("roster"), fieldsEl=$("fields"), traysEl=$("trays"),
+const rosterEl=$("roster"), manageEl=$("manage"), traysEl=$("trays"),
       shelfEl=$("shelf"), shelfNames=$("shelfNames"), drawBtn=$("draw"),
-      swapBtn=$("swap"), statusEl=$("status");
+      swapBtn=$("swap"), statusEl=$("status"),
+      addInput=$("addName"), addBtn=$("addBtn"), editBtn=$("editBtn"),
+      editPanel=$("editPanel"), editNote=$("editNote"), rosterLabel=$("rosterLabel");
+let editing = false;
 const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
 const active  = () => roster.filter(p => p.in && p.name).map(p => p.name);
@@ -268,26 +312,93 @@ function drawRoster(){
     const b = document.createElement("button");
     b.className="chip"; b.type="button";
     b.setAttribute("aria-pressed", p.in);
-    b.innerHTML = p.name + ' <span class="off">연차</span>';
-    b.onclick = () => { roster[i].in = !roster[i].in; refresh(); };
+    b.innerHTML = esc(p.name) + ' <span class="off">연차</span><span class="x" aria-hidden="true">×</span>';
+    b.onclick = () => {
+      if(editing){ removePerson(i); return; }
+      roster[i].in = !roster[i].in; refresh();
+    };
+    b.title = editing ? p.name + " 빼기" : "";
     rosterEl.appendChild(b);
   });
+  rosterEl.classList.toggle("editing", editing);
 }
-function drawFields(){
-  fieldsEl.innerHTML = "";
-  for(let i=0;i<roster.length+1;i++){
+function setEditing(on){
+  editing = on;
+  editBtn.setAttribute("aria-pressed", on);
+  editBtn.textContent = on ? "편집 끝내기" : "멤버 편집";
+  editPanel.hidden = !on;
+  editNote.textContent = NOTE;
+  rosterLabel.textContent = on
+    ? "멤버 편집 중 · 이름을 누르면 빼기"
+    : "오늘 나오는 사람 · 이름을 누르면 연차 처리";
+  drawRoster();
+  if(on) addInput.focus();
+}
+const NOTE = "위 이름을 누르면 빼기 · 고친 이름은 모두의 화면에 그대로 반영됩니다.";
+let noteTimer;
+function editMsg(text){
+  editNote.textContent = text;
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => { editNote.textContent = NOTE; }, 2500);
+}
+function removePerson(i){
+  const p = roster[i];
+  if(!p) return;
+  if(!confirm(p.name + " 님을 명단에서 뺄까요?\n(오늘만 빠지는 거면 편집을 끝내고 연차로 처리하세요)")) return;
+  roster.splice(i,1);
+  if(meSel.value === p.name) meSel.value = "";
+  editMsg("− " + p.name + " 님을 뺐어요");
+  afterRosterChange();
+}
+function drawManage(){
+  manageEl.innerHTML = "";
+  roster.forEach((p,i) => {
+    const row = document.createElement("div");
+    row.className = "mrow";
     const input = document.createElement("input");
-    input.value = roster[i] ? roster[i].name : "";
-    input.placeholder = "이름 추가";
+    input.value = p.name;
     input.setAttribute("aria-label",(i+1)+"번 이름");
     input.onchange = () => {
       const v = input.value.trim();
-      if(roster[i]) roster[i].name = v; else if(v) roster.push({name:v,in:true});
-      roster = roster.filter(p => p.name);
-      lastKey = null; refresh(); drawFields(); fillMeOptions();
+      const old = p.name;
+      if(!v){ input.value = old; return; }
+      if(v === old) return;
+      if(roster.some((q,j) => j !== i && q.name === v)){
+        input.value = old; editMsg("이미 " + v + " 님이 있어요"); return;
+      }
+      roster[i].name = v;
+      if(meSel.value === old) meSel.value = v;
+      editMsg(old + " → " + v + " 로 바꿨어요");
+      afterRosterChange();
+      flashSaved(v);
     };
-    fieldsEl.appendChild(input);
+    row.append(input);
+    manageEl.appendChild(row);
+  });
+}
+function flashSaved(name){
+  const el = [...manageEl.querySelectorAll("input")].find(i => i.value === name);
+  if(!el) return;
+  el.classList.add("saved");
+  setTimeout(() => el.classList.remove("saved"), 1200);
+}
+function addPerson(){
+  const v = addInput.value.trim();
+  if(!v) { addInput.focus(); return; }
+  if(roster.some(p => p.name === v)){
+    addInput.value = ""; setSync(v+" 님은 이미 있어요","warn"); return;
   }
+  roster.push({name:v, in:true});
+  addInput.value = "";
+  editMsg("＋ " + v + " 님을 추가했어요");
+  afterRosterChange();
+  addInput.focus();
+}
+function afterRosterChange(){
+  roster = roster.filter(p => p.name);
+  namesTs = Date.now();
+  lastKey = null;
+  refresh(); drawManage(); fillMeOptions(); push();
 }
 const sizes = (n,k) => { const b=Math.floor(n/k), r=n%k;
   return Array.from({length:k},(_,i)=>b+(i<r?1:0)); };
@@ -374,6 +485,9 @@ swapBtn.onclick = () => {
   lastKey = null;
 };
 drawBtn.onclick = draw;
+addBtn.onclick = addPerson;
+addInput.onkeydown = e => { if(e.key === "Enter") addPerson(); };
+editBtn.onclick = () => setEditing(!editing);
 
 /* ───────── 메뉴 게시판 ───────── */
 const cardsEl=$("cards"), meSel=$("me"), syncEl=$("sync"),
@@ -387,6 +501,23 @@ let saving = false;
 
 $("boardDate").textContent =
   new Date().toLocaleDateString("ko-KR",{month:"long",day:"numeric",weekday:"long"}) + " 메뉴판";
+
+/* 명단도 함께 공유 — 나중에 바꾼 쪽이 이깁니다 */
+let namesTs = 0;
+function applyNames(list, ts){
+  if(!Array.isArray(list) || !list.length) return;
+  if((ts||0) < namesTs) return;              // 내 변경이 더 최신이면 유지
+  // 누군가 이름을 입력하는 중이면 그대로 두고 다음 동기화 때 반영합니다
+  if(manageEl.contains(document.activeElement)) return;
+  namesTs = ts || namesTs;
+  const flags = new Map(roster.map(p => [p.name, p.in]));
+  const next = list.filter(n => typeof n === "string" && n.trim())
+                   .map(n => ({ name:n, in: flags.has(n) ? flags.get(n) : true }));
+  if(next.map(p=>p.name).join("|") === roster.map(p=>p.name).join("|")) return;
+  roster = next;
+  refresh(); drawManage(); fillMeOptions();
+  if(editing) editMsg("다른 분이 명단을 바꿔서 새로 불러왔어요");
+}
 
 function fillMeOptions(){
   const cur = meSel.value;
@@ -414,15 +545,17 @@ async function pull(quiet){
     const d = await r.json();
     const rec = d && d.record ? d.record : d;
     board = { proposals: Array.isArray(rec.proposals) ? rec.proposals : [] };
+    applyNames(rec.names, rec.namesTs);
     setSync("실시간 공유 중","live");
     render();
   }catch(e){
     if(!quiet) setSync("연결 실패 · 설정을 확인해 주세요","warn");
   }
 }
+let pendingPush = false;
 async function push(){
   if(!shared){ render(); return; }
-  if(saving) return;
+  if(saving){ pendingPush = true; return; }   // 저장 중에 생긴 변경도 놓치지 않게
   saving = true; setSync("저장 중…");
   try{
     // 남의 글이 덮이지 않게 최신본을 한 번 더 읽고 합칩니다
@@ -434,16 +567,19 @@ async function push(){
       const map = new Map(remote.map(p => [p.id, p]));
       board.proposals.forEach(p => map.set(p.id, p));
       board.proposals = [...map.values()].filter(p => board.deleted ? !board.deleted.includes(p.id) : true);
+      applyNames(rec.names, rec.namesTs);   // 남이 더 최근에 바꾼 명단이면 그쪽을 따릅니다
     }
     const keep = board.proposals.filter(p => p.date === today());
     board.proposals = keep;
-    const res = await fetch(API, { method:"PUT", headers:HEAD, body:JSON.stringify({proposals:keep}) });
+    const res = await fetch(API, { method:"PUT", headers:HEAD,
+      body:JSON.stringify({ proposals:keep, names: roster.map(p => p.name), namesTs }) });
     if(!res.ok) throw new Error(res.status);
     setSync("실시간 공유 중","live");
   }catch(e){
     setSync("저장 실패 · 다시 시도해 주세요","warn");
   }
   saving = false; render();
+  if(pendingPush){ pendingPush = false; push(); }
 }
 
 function render(){
@@ -527,7 +663,7 @@ setInterval(() => { if(!document.hidden && !saving) pull(true); }, 12000);
 document.addEventListener("visibilitychange", () => { if(!document.hidden) pull(true); });
 
 /* 시작 */
-refresh(); drawFields(); fillMeOptions(); pull();
+refresh(); drawManage(); fillMeOptions(); pull();
 </script>
 </body>
 </html>
